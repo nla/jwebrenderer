@@ -2,18 +2,27 @@ package au.gov.nla.jwebrenderer.browser;
 
 import com.grack.nanojson.JsonParser;
 import com.grack.nanojson.JsonParserException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
 import java.net.URI;
 
 public class Chrome implements AutoCloseable {
-    private final ChromeRpc rpc;
+    private final Logger log = LoggerFactory.getLogger(Chrome.class);
+    private final URI devtoolsBaseUrl;
+    private ChromeRpc rpc;
 
     public Chrome(URI devtoolsBaseUrl) {
+        this.devtoolsBaseUrl = devtoolsBaseUrl;
         this.rpc = new ChromeRpc(getWebsocketDebuggerUrl(devtoolsBaseUrl));
     }
 
     public BrowserContext createContext() {
+        if (rpc.isClosed()) {
+            log.warn("Connection to Chrome lost attempting to reconnect");
+            rpc = new ChromeRpc(getWebsocketDebuggerUrl(devtoolsBaseUrl));
+        }
         return new BrowserContext(rpc);
     }
 

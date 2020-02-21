@@ -54,7 +54,7 @@ public class ChromeRpc {
                 } else {
                     var handler = handlers.get(message.getString("method"));
                     if (handler == null) {
-                        log.warn("Unhandled event: " + message.getString("method"));
+                        log.debug("Unhandled event: " + message.getString("method"));
                     } else {
                         ForkJoinPool.commonPool().submit(() -> handler.accept(message.getObject("params")));
                     }
@@ -124,5 +124,9 @@ public class ChromeRpc {
 
     public void close() {
         webSocket.sendClose(200, "Close").join();
+    }
+
+    public boolean isClosed() {
+        return webSocket.isInputClosed() || webSocket.isOutputClosed();
     }
 }
