@@ -1,2 +1,2 @@
 mvn package
-cp -v webapp/target/*.jar $1/
+cp -v target/*.jar $1/
