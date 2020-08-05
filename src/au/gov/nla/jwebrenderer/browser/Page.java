@@ -65,8 +65,9 @@ public class Page implements AutoCloseable {
         return future.whenComplete((t, e) -> handlers.remove(event));
     }
 
-    public byte[] screenshot() {
-        return Base64.getDecoder().decode(call("Page.captureScreenshot", Map.of()).getString("data"));
+    public byte[] screenshot(Map<String, Object> clip) {
+        return Base64.getDecoder().decode(call("Page.captureScreenshot",
+                clip == null ? Map.of() : Map.of("clip", clip)).getString("data"));
     }
 
     public void hideScrollbars() {

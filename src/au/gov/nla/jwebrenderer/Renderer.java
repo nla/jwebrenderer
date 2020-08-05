@@ -5,6 +5,7 @@ import au.gov.nla.jwebrenderer.browser.Chrome;
 import au.gov.nla.jwebrenderer.browser.Page;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -16,7 +17,7 @@ public class Renderer {
         chrome = new Chrome(URI.create("http://" + chromeHost + ":" + chromePort));
     }
 
-    public byte[] render(String url, int viewportWidth, int viewportHeight, int timeout, int sleep) throws TimeoutException, InterruptedException {
+    public byte[] render(String url, int viewportWidth, int viewportHeight, Map<String, Object> clip, int timeout, int sleep) throws TimeoutException, InterruptedException {
         try (BrowserContext context = chrome.createContext();
              Page page = context.createPage(Map.of("width", viewportWidth, "height", viewportHeight))) {
                 page.load(url, timeout, TimeUnit.MILLISECONDS);
@@ -24,7 +25,7 @@ public class Renderer {
                 if (sleep > 0) {
                     Thread.sleep(sleep);
                 }
-                return page.screenshot();
+                return page.screenshot(clip);
         }
     }
 }
