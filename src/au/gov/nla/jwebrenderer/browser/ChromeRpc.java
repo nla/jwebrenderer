@@ -2,6 +2,7 @@ package au.gov.nla.jwebrenderer.browser;
 
 import com.grack.nanojson.JsonObject;
 import com.grack.nanojson.JsonParser;
+import com.grack.nanojson.JsonStringWriter;
 import com.grack.nanojson.JsonWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,9 +101,10 @@ public class ChromeRpc {
 
     private CompletableFuture<JsonObject> callAsync(String sessionId, String method, Map<String, Object> params) {
         long id = idGenerator.incrementAndGet();
-        String data = JsonWriter.string().object()
-                .value("id", id)
-                .value("sessionId", sessionId)
+        JsonStringWriter json = JsonWriter.string().object()
+                .value("id", id);
+        if (sessionId != null) json.value("sessionId", sessionId);
+        String data = json
                 .value("method", method)
                 .object("params", params)
                 .end()
